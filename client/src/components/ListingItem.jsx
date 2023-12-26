@@ -32,13 +32,23 @@ export default function Listing() {
     const fetchListing = async () => {
       try {
         setLoading(true);
+  
+        // Check if params.listingId is defined
+        if (!params.listingId) {
+          setError(true);
+          setLoading(false);
+          return;
+        }
+  
         const res = await fetch(`/api/listing/get/${params.listingId}`);
         const data = await res.json();
+  
         if (data.success === false) {
           setError(true);
           setLoading(false);
           return;
         }
+  
         setListing(data);
         setLoading(false);
         setError(false);
@@ -47,6 +57,7 @@ export default function Listing() {
         setLoading(false);
       }
     };
+  
     fetchListing();
   }, [params.listingId]);
 

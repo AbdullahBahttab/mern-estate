@@ -32,28 +32,28 @@ export default function CreateListing() {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   console.log(formData);
-  const handleImageSubmit = async() => {
+  const handleImageSubmit = async () => {
     if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
       setUploading(true);
       setImageUploadError(false);
       const promises = [];
-
+  
       for (let i = 0; i < files.length; i++) {
         promises.push(storeImage(files[i]));
       }
-      Promise.all(promises)
-        .then((urls) => {
-          setFormData({
-            ...formData,
-            imageUrls: formData.imageUrls.concat(urls),
-          });
-          setImageUploadError(false);
-          setUploading(false);
-        })
-        .catch(() => {
-          setImageUploadError('Image upload failed (2 mb max per image)');
-          setUploading(false);
+  
+      try {
+        const urls = await Promise.all(promises);
+        setFormData({
+          ...formData,
+          imageUrls: formData.imageUrls.concat(urls),
         });
+        setImageUploadError(false);
+        setUploading(false);
+      } catch (error) {
+        setImageUploadError('Image upload failed (2 mb max per image)');
+        setUploading(false);
+      }
     } else {
       setImageUploadError('You can only upload 6 images per listing');
       setUploading(false);
@@ -65,7 +65,10 @@ export default function CreateListing() {
       const storage = getStorage(app);
       const fileName = new Date().getTime() + file.name;
       const storageRef = ref(storage, fileName);
+      
+      // Define uploadTask here
       const uploadTask = uploadBytesResumable(storageRef, file);
+  
       uploadTask.on(
         'state_changed',
         (snapshot) => {
@@ -317,14 +320,14 @@ export default function CreateListing() {
             </span>
           </p>
           <div className='flex gap-4'>
-            <input
-              onChange={(e) => setFiles(e.target.files)}
-              className='p-3 border border-gray-300 rounded w-full'
-              type='file'
-              id='images'
-              accept='image/*'
-              multiple
-            />
+          <input
+  onChange={(e) => setFiles(e.target.files)}
+  className='p-3 border border-gray-300 rounded w-full'
+  type='file'
+  id='images'
+  accept='image/*'
+  multiple
+/>
             <button
               type='button'
               disabled={uploading}

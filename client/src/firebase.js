@@ -11,6 +11,7 @@ const firebaseConfig = {
   storageBucket: "easystate-e032d.appspot.com",
   messagingSenderId: "1079759229747",
   appId: "1:1079759229747:web:1ec2e5cd4c67613cb46446"
+  
 };
 
 // Initialize Firebase
